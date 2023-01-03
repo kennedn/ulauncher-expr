@@ -18,17 +18,21 @@ class KeywordQueryEventListener(EventListener):
   def on_event(self, event, extension):
     items = []
     expression = event.get_argument()
+    if len(expression) < 1:
+        return RenderResultListAction(items)
     try:
       result = str(eval(expression, { '__builtins__': None, 'math': math }))
 
       items.append(ExtensionResultItem(icon='images/icon.png',
-        name='Expr: %s = %s' % ( expression, result ),
+        highlightable=False,
+        name=f'{expression} = {result}',
         description='Press \'enter\' to copy to clipboard.',
         on_enter=CopyToClipboardAction(result)
       ))
-    except NameError as errorMessage:
+    except Exception as errorMessage:
       items.append(ExtensionResultItem(icon='images/icon.png',
-        name='Expr: %s' % errorMessage,
+        highlightable=False,
+        name= f'Error: {errorMessage}',
         description='Expression has Error.',
         on_enter=CopyToClipboardAction(errorMessage)
       ))
